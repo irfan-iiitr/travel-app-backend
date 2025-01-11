@@ -1,2 +1,4 @@
 .env
 node_modules
+diagram.svg
+draft-generation.excalidraw
