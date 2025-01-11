@@ -101,8 +101,14 @@ const waitForNewRide=  async (req,res)=>{
         res.status(204).end(); // No Content
     });
 
+    //The code sets a 30-second timeout for an HTTP request. 
+    //  If no new ride data is available within this time, respond with 204 No Content to indicate no updates.
+
     // Add the response object to the pendingRequests array
-    pendingRequests.push(res);
+    pendingRequests.push(res); //When does it execute?
+
+    // Immediately after the waitForNewRide function is invoked for each request.
+    // It does not wait for the 30-second timeout.
 }
 
 
@@ -117,6 +123,44 @@ subscribeToQueue("new-ride", (data) => {
     // Clear the pending requests
     pendingRequests.length = 0;
 });
+
+
+// What if response is pusehe din pending request but has been retruned with 204 status code
+// Response is no longer valid:
+// Once a response object (res) has been sent (either due to the timeout or because it was explicitly used to send data), 
+// it is no longer usable. Any attempt to send data to such a response will result in an error like Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client.
+
+// To avoid this error, you can check if the response object is still writable before sending data to it.
+
+
+// const waitForNewRide = async (req, res) => {
+//     console.log("captain waiting for new ride");
+//     // Set timeout for long polling (e.g., 30 seconds)
+//     req.setTimeout(30000, () => {
+//         res.status(204).end(); // No Content
+//     });
+
+//     // Add the response object to the pendingRequests array
+//     pendingRequests.push(res);
+// };
+
+// subscribeToQueue("new-ride", (data) => {
+//     const rideData = JSON.parse(data);
+//     // Send the new ride data to all pending requests
+//     pendingRequests.forEach(res => {
+//         if (!res.headersSent) {
+//             res.json(rideData);
+//         }
+//     });
+
+//     // Clear the pending requests
+//     pendingRequests.length = 0;
+// });
+
+
+
+
+
 
 
 

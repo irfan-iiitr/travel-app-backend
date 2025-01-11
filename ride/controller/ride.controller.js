@@ -10,9 +10,6 @@ const createRide=async(req,res)=>{
             pickup,
             destination
         })
-    
-    
-    
         await newRide.save();
         publishToQueue("new-ride", JSON.stringify(newRide));
         res.send(newRide);  
