@@ -84,17 +84,20 @@ const profile = async (req, res) => {
 };
 
 
-const acceptedRide=async(req,res)=>{
-     // Long polling: wait for 'ride-accepted' event
-     rideEventEmitter.once('ride-accepted', (data) => {
+// Function to handle accepted ride
+const acceptedRide = async (req, res) => {
+    // Long polling: wait for 'ride-accepted' event
+    rideEventEmitter.once('ride-accepted', (data) => { // to listen for an event only once
+        // Send the data when the 'ride-accepted' event is emitted
         res.send(data);
     });
 
     // Set timeout for long polling (e.g., 30 seconds)
     setTimeout(() => {
+        // If no event is received within 30 seconds, send a 204 No Content response
         res.status(204).send();
     }, 30000);
-}
+};
 
 subscribeToQueue('ride-accepted', async (msg) => {
     const data = JSON.parse(msg);

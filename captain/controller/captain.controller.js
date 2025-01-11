@@ -94,35 +94,35 @@ const toggleAvailability= async(req,res)=>{
 
 const pendingRequests = [];
 
-const waitForNewRide=  async (req,res)=>{
-    console.log("captain wating for new ride");
-     // Set timeout for long polling (e.g., 30 seconds)
-    req.setTimeout(30000, () => {
-        res.status(204).end(); // No Content
-    });
+// const waitForNewRide=  async (req,res)=>{
+//     console.log("captain wating for new ride");
+//      // Set timeout for long polling (e.g., 30 seconds)
+//     req.setTimeout(30000, () => {
+//         res.status(204).end(); // No Content
+//     });
 
-    //The code sets a 30-second timeout for an HTTP request. 
-    //  If no new ride data is available within this time, respond with 204 No Content to indicate no updates.
+//     //The code sets a 30-second timeout for an HTTP request. 
+//     //  If no new ride data is available within this time, respond with 204 No Content to indicate no updates.
 
-    // Add the response object to the pendingRequests array
-    pendingRequests.push(res); //When does it execute?
+//     // Add the response object to the pendingRequests array
+//     pendingRequests.push(res); //When does it execute?
 
-    // Immediately after the waitForNewRide function is invoked for each request.
-    // It does not wait for the 30-second timeout.
-}
+//     // Immediately after the waitForNewRide function is invoked for each request.
+//     // It does not wait for the 30-second timeout.
+// }
 
 
-subscribeToQueue("new-ride", (data) => {
-    const rideData = JSON.parse(data);
+// subscribeToQueue("new-ride", (data) => {
+//     const rideData = JSON.parse(data);
 
-    // Send the new ride data to all pending requests
-    pendingRequests.forEach(res => {
-        res.json({data:rideData});
-    });
+//     // Send the new ride data to all pending requests
+//     pendingRequests.forEach(res => {
+//         res.json({data:rideData});
+//     });
 
-    // Clear the pending requests
-    pendingRequests.length = 0;
-});
+//     // Clear the pending requests
+//     pendingRequests.length = 0;
+// });
 
 
 // What if response is pusehe din pending request but has been retruned with 204 status code
@@ -133,29 +133,29 @@ subscribeToQueue("new-ride", (data) => {
 // To avoid this error, you can check if the response object is still writable before sending data to it.
 
 
-// const waitForNewRide = async (req, res) => {
-//     console.log("captain waiting for new ride");
-//     // Set timeout for long polling (e.g., 30 seconds)
-//     req.setTimeout(30000, () => {
-//         res.status(204).end(); // No Content
-//     });
+const waitForNewRide = async (req, res) => {
+    console.log("captain waiting for new ride");
+    // Set timeout for long polling (e.g., 30 seconds)
+    req.setTimeout(30000, () => {
+        res.status(204).end(); // No Content
+    });
 
-//     // Add the response object to the pendingRequests array
-//     pendingRequests.push(res);
-// };
+    // Add the response object to the pendingRequests array
+    pendingRequests.push(res);
+};
 
-// subscribeToQueue("new-ride", (data) => {
-//     const rideData = JSON.parse(data);
-//     // Send the new ride data to all pending requests
-//     pendingRequests.forEach(res => {
-//         if (!res.headersSent) {
-//             res.json(rideData);
-//         }
-//     });
+subscribeToQueue("new-ride", (data) => {
+    const rideData = JSON.parse(data);
+    // Send the new ride data to all pending requests
+    pendingRequests.forEach(res => {
+        if (!res.headersSent) {
+            res.json(rideData);
+        }
+    });
 
-//     // Clear the pending requests
-//     pendingRequests.length = 0;
-// });
+    // Clear the pending requests
+    pendingRequests.length = 0;
+});
 
 
 
